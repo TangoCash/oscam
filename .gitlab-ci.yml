@@ -1,13 +1,12 @@
 stages:
   - tag
-  - version
 
 tag-job:
   stage: tag
   tags:
    - tagging
   script:
-    - echo "Tagging automation process..."
+    - echo "Tagging + Versioning automation process..."
     - git status
     - git branch -l --all
     - git describe --tags --abbrev=0 2>/dev/null
@@ -29,21 +28,10 @@ tag-job:
     - git config user.name "pipeline-user"
     - git config user.email "pipeline-user@$users.noreply.git.streamboard.tv"
     - git tag "$new_tag" "$sha"
-    - git push "$PAT_REPO_URL" "$new_tag" -o ci.skip
-    - echo "Tagging automation complete."
-
-version-job:
-  stage: version
-  tags:
-   - tagging
-  script:
-    - echo "Versioning automation process..."
-    - echo "$sha $curr_tag $new_tag"
 
     - echo "Updating version information in globals.h..."
-#    - sed -i "/# define CS_SVN_VERSION/s/.*/# define CS_SVN_VERSION                     \"$new_tag\"/" ./globals.h
-#    - git config user.name "pipeline-user"
-#    - git config user.email "pipeline-user@$users.noreply.git.streamboard.tv"
-#    - git tag "$new_tag" "$sha"
+    - sed -i "/# define CS_SVN_VERSION/s/.*/# define CS_SVN_VERSION                     \"$new_tag\"/" ./globals.h
+    - git commit --amend --no-edit
+    - git push "$PAT_REPO_URL" "$new_tag" -o ci.skip
 #    - git push "$PAT_REPO_URL" "$new_tag" -o ci.skip
-    - echo "Versioning automation complete."
+    - echo "Tagging + Versioning automation complete."
