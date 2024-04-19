@@ -30,8 +30,8 @@ tag-job:
     - git tag "$new_tag" "$sha"
 
     - echo "Updating version information in globals.h..."
-    - sed -i "/# define CS_SVN_VERSION/s/.*/# define CS_SVN_VERSION                     \"$new_tag\"/" ./globals.h
+    - sed -i "/# define CS_SVN_VERSION/s/.*/# define CS_SVN_VERSION\t\t\t\"$new_tag\"/" ./globals.h
     - git commit --amend --no-edit
-    - git push "$PAT_REPO_URL" "$new_tag" -o ci.skip
+    - git push "$PAT_REPO_URL" -o ci.skip
 #    - git push "$PAT_REPO_URL" "$new_tag" -o ci.skip
     - echo "Tagging + Versioning automation complete."
