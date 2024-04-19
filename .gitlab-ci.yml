@@ -23,6 +23,7 @@ tag-job:
     - echo "Updating version information in globals.h..."
     - sed -i "/# define CS_SVN_VERSION/s/.*/# define CS_SVN_VERSION\t\t\t\"$new_tag\"/" ./globals.h
     - git diff globals.h
+    - git add globals.h
     - git commit --amend --no-edit
 
     - sha=$(git rev-parse HEAD)
@@ -36,6 +37,5 @@ tag-job:
     - echo "Creating new tag:$new_tag on sha:$sha..."
     - git tag --annotate "$new_tag" -m "Revision $new_tag" "$sha"
 
-    - git push --force --follow-tags "http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" HEAD:$CI_COMMIT_BRANCH -o ci.skip
-#    - git push "$PAT_REPO_URL" "$new_tag" -o ci.skip
+    - git push --force --follow-tags "http://pipeline-user:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" HEAD:$CI_COMMIT_BRANCH -o ci.skip
     - echo "Tagging + Versioning automation complete."
