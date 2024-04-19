@@ -30,12 +30,12 @@ tag-job:
     - echo "Removing existing tag:$new_tag..."
     - if git tag --list | grep -iq "$new_tag"; then
         git tag --delete "$new_tag";
-        git push "$PAT_REPO_URL" --delete "$new_tag" -o ci.skip;
+        git push "http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" --delete "$new_tag" -o ci.skip;
       fi;
 
     - echo "Creating new tag:$new_tag on sha:$sha..."
     - git tag --annotate "$new_tag" -m "Revision $new_tag" "$sha"
 
-    - git push --force --follow-tags "$PAT_REPO_URL" HEAD:$CI_COMMIT_BRANCH -o ci.skip
+    - git push --force --follow-tags "http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" $CI_COMMIT_BRANCH -o ci.skip
 #    - git push "$PAT_REPO_URL" "$new_tag" -o ci.skip
     - echo "Tagging + Versioning automation complete."
