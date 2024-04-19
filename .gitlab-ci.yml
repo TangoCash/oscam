@@ -15,7 +15,7 @@ tag-job:
     - ./config.sh --oscam-commit
 
     - git config user.name "pipeline-user"
-    - git config user.email "pipeline-user@$users.noreply.git.streamboard.tv"
+    - git config user.email "pipeline-user@users.noreply.git.streamboard.tv"
 
     - curr_tag=$(git describe --tags --abbrev=0 2>/dev/null)
     - new_tag=$(( $curr_tag + 10 ))
