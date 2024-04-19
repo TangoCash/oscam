@@ -21,9 +21,9 @@ tag-job:       # This job runs in the build stage, which runs first.
 
     - echo "Removing existing tag:$new_tag..."
     - if git tag --list | grep -iq "$new_tag"; then
-        git tag --delete "$new_tag" 
-        git push origin --delete "$new_tag"
-      fi
+        git tag --delete "$new_tag";
+        git push origin --delete "$new_tag";
+      fi;
 
     - echo "Creating new tag:$new_tag on sha:$sha..."
     - git config user.name "pipeline-user"
