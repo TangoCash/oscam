@@ -4,8 +4,6 @@ auto-version:
   only:
    - master
    - pipeline-test
-  variables:
-    REPO_URL: "http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}"
   script:
     - echo "Versioning automation process..."
     
@@ -36,12 +34,12 @@ auto-version:
     - if git tag --list | grep -iq "$new_tag"; then
         echo "Removing existing tag:$new_tag...";
         git tag --delete "$new_tag";
-        git push "$REPO_URL" --delete "$new_tag" -o ci.skip;
+        git push "http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" --delete "$new_tag" -o ci.skip;
       fi;
 
     - echo "Creating new tag:$new_tag on sha:$sha..."
     - git tag --annotate "$new_tag" -m "Revision $new_tag" "$sha"
 
     - echo "Pushing forced changes to repo:$REPO_URL..."
-    - git push --force --follow-tags "$REPO_URL" HEAD:$CI_COMMIT_BRANCH -o ci.skip
+    - git push --force --follow-tags "http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" HEAD:$CI_COMMIT_BRANCH -o ci.skip
     - echo "Versioning automation complete."
