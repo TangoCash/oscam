@@ -6,7 +6,7 @@ auto-version:
    - pipeline-test
   script:
     - echo "Versioning automation process..."
-    
+    - git fetch --unshallow
     - echo "List some debug information..."
     - git status --verbose
     - git branch --list --all
