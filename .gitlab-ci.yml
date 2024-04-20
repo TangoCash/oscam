@@ -40,6 +40,6 @@ auto-version:
     - echo "Creating new tag:$new_tag on sha:$sha..."
     - git tag --annotate "$new_tag" -m "Revision $new_tag" "$sha"
 
-    - echo "Pushing forced changes to repo:http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}..."
+    - echo "Pushing forced changes to repo:$GIT_PUSH_REPO..."
     - git push --force --follow-tags "http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" HEAD:$CI_COMMIT_BRANCH -o ci.skip
     - echo "Versioning automation complete."
