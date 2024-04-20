@@ -7,6 +7,7 @@ tag-job:
     - versioning
   only:
    - master
+   - pipeline-test
   script:
     - echo "Tagging + Versioning automation process..."
     - git status
