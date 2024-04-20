@@ -1,34 +1,38 @@
 stages:
-  - tag
+  - version
 
-tag-job:
-  stage: tag
+version-job:
+  stage: version
   tags:
     - versioning
   only:
    - master
    - pipeline-test
   script:
-    - echo "Tagging + Versioning automation process..."
-    - git status
-    - git branch -l --all
+    - echo "Versioning automation process..."
+    
+    - echo "List some debug information..."
+    - git status --verbose
+    - git branch --list --all
+    - git tag --list
     - git describe --tags --abbrev=0 2>/dev/null
-    - git rev-parse HEAD
+    - git rev-parse --short HEAD
     - ./config.sh --oscam-revision
     - ./config.sh --oscam-commit
 
+    - echo "Setup git properties..."
     - git config user.name "pipeline-user"
     - git config user.email "pipeline-user@users.noreply.git.streamboard.tv"
 
+    - echo "Calculate new tag..."
     - curr_tag=$(git describe --tags --abbrev=0 2>/dev/null)
-    - new_tag=$(( $curr_tag + 10 ))
+    - new_tag=$(( $curr_tag + 1 ))
 
     - echo "Updating version information in globals.h..."
     - sed -i "/# define CS_SVN_VERSION/s/.*/# define CS_SVN_VERSION\t\t\t\"$new_tag\"/" ./globals.h
     - git diff globals.h
     - git add globals.h
     - git commit --amend --no-edit
-
     - sha=$(git rev-parse HEAD)
 
     - echo "Removing existing tag:$new_tag..."
@@ -41,4 +45,4 @@ tag-job:
     - git tag --annotate "$new_tag" -m "Revision $new_tag" "$sha"
 
     - git push --force --follow-tags "http://pipeline-user:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" HEAD:$CI_COMMIT_BRANCH -o ci.skip
-    - echo "Tagging + Versioning automation complete."
+    - echo "Versioning automation complete."
