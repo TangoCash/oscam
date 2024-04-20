@@ -9,7 +9,7 @@ auto-version:
     - git fetch --unshallow
     - git switch $CI_COMMIT_BRANCH
     - echo "List some debug information..."
-    - ls -la
+    - ls -lah
     - git status --verbose
     - git branch --list --all
     - git tag --list
