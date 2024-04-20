@@ -1,3 +1,6 @@
+variables:
+  REPO_URL: "http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}"
+
 stages:
   - version
 
@@ -35,14 +38,15 @@ version-job:
     - git commit --amend --no-edit
     - sha=$(git rev-parse HEAD)
 
-    - echo "Removing existing tag:$new_tag..."
     - if git tag --list | grep -iq "$new_tag"; then
+        echo "Removing existing tag:$new_tag...";
         git tag --delete "$new_tag";
-        git push "http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" --delete "$new_tag" -o ci.skip;
+        git push "$REPO_URL" --delete "$new_tag" -o ci.skip;
       fi;
 
     - echo "Creating new tag:$new_tag on sha:$sha..."
     - git tag --annotate "$new_tag" -m "Revision $new_tag" "$sha"
 
-    - git push --force --follow-tags "http://pipeline-user:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" HEAD:$CI_COMMIT_BRANCH -o ci.skip
+    - echo "Pushing forced changes to repo:$sha..."
+    - git push --force --follow-tags "$REPO_URL" HEAD:$CI_COMMIT_BRANCH -o ci.skip
     - echo "Versioning automation complete."
