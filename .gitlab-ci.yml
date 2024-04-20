@@ -4,7 +4,7 @@ stages:
 tag-job:
   stage: tag
   tags:
-   - tagging
+   - versioning
   script:
     - echo "Tagging + Versioning automation process..."
     - git status
