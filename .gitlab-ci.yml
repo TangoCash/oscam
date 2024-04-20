@@ -1,11 +1,7 @@
 variables:
   REPO_URL: "http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}"
 
-stages:
-  - version
-
-version-job:
-  stage: version
+auto-version:
   tags:
     - versioning
   only:
