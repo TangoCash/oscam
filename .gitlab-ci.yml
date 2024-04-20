@@ -1,12 +1,11 @@
-variables:
-  REPO_URL: "http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}"
-
 auto-version:
   tags:
     - versioning
   only:
    - master
    - pipeline-test
+  variables:
+    REPO_URL: "http://version-pipeline:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}"
   script:
     - echo "Versioning automation process..."
     
@@ -19,11 +18,11 @@ auto-version:
     - ./config.sh --oscam-revision
     - ./config.sh --oscam-commit
 
-    - echo "Setup git properties..."
+    - echo "Setting up git properties..."
     - git config user.name "pipeline-user"
     - git config user.email "pipeline-user@users.noreply.git.streamboard.tv"
 
-    - echo "Calculate new tag..."
+    - echo "Calculating new tag value..."
     - curr_tag=$(git describe --tags --abbrev=0 2>/dev/null)
     - new_tag=$(( $curr_tag + 1 ))
 
@@ -43,6 +42,6 @@ auto-version:
     - echo "Creating new tag:$new_tag on sha:$sha..."
     - git tag --annotate "$new_tag" -m "Revision $new_tag" "$sha"
 
-    - echo "Pushing forced changes to repo:$sha..."
+    - echo "Pushing forced changes to repo:$REPO_URL..."
     - git push --force --follow-tags "$REPO_URL" HEAD:$CI_COMMIT_BRANCH -o ci.skip
     - echo "Versioning automation complete."
