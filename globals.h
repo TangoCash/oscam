@@ -1721,6 +1721,7 @@ struct s_reader										// contains device info, reader info and card info
 	int16_t			deviceemm;						// catch device specific emms (so far only used for viaccess)
 	int8_t			card_status;
 	int8_t			deprecated;						// if 0 ATR obeyed, if 1 default speed (9600) is chosen; for devices that cannot switch baudrate
+	int8_t			resetalways;					// send reset after each commands (for pscs)
 	struct			s_module ph;
 	const struct s_cardreader *crdr;
 	void			*crdr_data;						// Private card reader data
