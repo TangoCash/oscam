@@ -1130,6 +1130,7 @@ static const struct config_list reader_opts[] =
 #ifdef READER_DRECAS
 	DEF_OPT_STR("stmkeys"                         , OFS(stmkeys),                         NULL),
 #endif
+	DEF_OPT_INT8("resetalways"                    , OFS(resetalways),                     0),
 	DEF_OPT_INT8("deprecated"                     , OFS(deprecated),                      0),
 	DEF_OPT_INT8("audisabled"                     , OFS(audisabled),                      0),
 	DEF_OPT_INT8("autype"                         , OFS(autype),                          0),
@@ -1181,7 +1182,7 @@ static bool reader_check_setting(const struct config_list *UNUSED(clist), void *
 #ifdef WITH_AZBOX
 		"mode",
 #endif
-		"deprecated", "ndsversion",
+		"resetalways", "deprecated", "ndsversion",
 		0
 	};
 	// These are written only when the reader is network reader
