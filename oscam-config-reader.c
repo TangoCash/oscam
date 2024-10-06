@@ -1159,6 +1159,7 @@ static const struct config_list reader_opts[] =
 	DEF_OPT_FUNC_X("cwekey13"                     , OFS(cwekey[13]),                      param_fn, SIZEOF(cwekey[13]) ^ (OFS(cwekey_length[13]) - OFS(cwekey[13])) << 8),
 	DEF_OPT_FUNC_X("cwekey14"                     , OFS(cwekey[14]),                      param_fn, SIZEOF(cwekey[14]) ^ (OFS(cwekey_length[14]) - OFS(cwekey[14])) << 8),
 	DEF_OPT_FUNC_X("cwekey15"                     , OFS(cwekey[15]),                      param_fn, SIZEOF(cwekey[15]) ^ (OFS(cwekey_length[15]) - OFS(cwekey[15])) << 8),
+	DEF_OPT_FUNC_X("cwekey16"                     , OFS(cwekey[16]),                      param_fn, SIZEOF(cwekey[16]) ^ (OFS(cwekey_length[16]) - OFS(cwekey[16])) << 8),
 	DEF_OPT_INT8("forcecwswap"                    , OFS(forcecwswap),                     0),
 	DEF_OPT_INT8("evensa"                         , OFS(evensa),                          0),
 	DEF_OPT_INT8("forceemmg"                      , OFS(forceemmg),                       0),
@@ -1280,7 +1281,7 @@ static bool reader_check_setting(const struct config_list *UNUSED(clist), void *
 		"fix9993", "rsakey", "deskey", "ins7e", "ins42", "ins7e11", "ins2e06", "k1_generic", "k1_unique", "force_irdeto", "needsemmfirst", "boxkey",
 		"atr", "detect", "nagra_read", "mhz", "cardmhz", "readtiers", "read_old_classes", "use_gpio", "needsglobalfirst",
 #ifdef READER_NAGRA_MERLIN
-		"mod1", "idird", "cmd0eprov", "mod2", "key3588", "key3460", "key3310", "data50", "mod50", "nuid", "forcepair", "otpcsc", "otacsc", "cwpkcaid", "headermode", "cwekey0", "cwekey1", "cwekey2", "cwekey3", "cwekey4", "cwekey5", "cwekey6", "cwekey7", "cwekey8", "cwekey9", "cwekey10", "cwekey11", "cwekey12", "cwekey13", "cwekey14", "cwekey15",
+		"mod1", "idird", "cmd0eprov", "mod2", "key3588", "key3460", "key3310", "data50", "mod50", "nuid", "forcepair", "otpcsc", "otacsc", "cwpkcaid", "headermode", "cwekey0", "cwekey1", "cwekey2", "cwekey3", "cwekey4", "cwekey5", "cwekey6", "cwekey7", "cwekey8", "cwekey9", "cwekey10", "cwekey11", "cwekey12", "cwekey13", "cwekey14", "cwekey15", "cwekey16",
 #endif
 #if defined(READER_NAGRA)
 		"cak63nuid", "cak63cwekey",
