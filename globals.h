@@ -372,7 +372,7 @@
 #define WIKI_URL				"https://wiki.streamboard.tv/wiki"
 #define BOARD_URL				"https://board.streamboard.tv"
 #ifndef CS_VERSION
-#define CS_VERSION				"2.24.10-11841"
+#define CS_VERSION				"2.24.10-11842"
 #endif
 #ifndef CS_GIT_COMMIT
 #define CS_GIT_COMMIT			"a2b4c6d8"
@@ -1596,8 +1596,8 @@ struct s_reader										// contains device info, reader info and card info
 	uint8_t			key3460_length;
 	uint8_t			key3310[16];
 	uint8_t			key3310_length;
-	uint8_t			cwekey[17][16];
-	uint8_t			cwekey_length[17];
+	uint8_t			cwekey[16][16];
+	uint8_t			cwekey_length[16];
 	uint8_t			idird[4];
 	uint8_t			idird_length;
 	uint8_t			kdt05_00[216];

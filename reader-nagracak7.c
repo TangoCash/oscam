@@ -1135,7 +1135,7 @@ static int32_t CAK7_GetCamKey(struct s_reader *reader)
 		int cwekeycount = 0, i;
 		memcpy(cmd0e + 132, reader->nuid, reader->nuid_length); // inject NUID
 
-		for (i = 0; i < 17; i++)
+		for (i = 0; i < 16; i++)
 			cwekeycount += !!reader->cwekey_length[i];
 
 		if(cwekeycount == 0)

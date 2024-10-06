@@ -2802,7 +2802,7 @@ static char *send_oscam_reader_config(struct templatevars *vars, struct uriparam
 		{ tpl_printf(vars, TPLAPPEND, "FORCEPAIR", "%02X", rdr->forcepair[i]); }
 
 	// cwekeys (CAK7)
-	for(j = 0; j < 17; j++)
+	for(j = 0; j < 16; j++)
 	{
 		char key[9] = "CWEKEY";
 		if(j > 9)
