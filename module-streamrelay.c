@@ -33,6 +33,9 @@ typedef struct
 char *stream_source_auth = NULL;
 uint32_t cluster_size = 50;
 bool has_dvbcsa_ecm = 0, is_dvbcsa_static = 1;
+#if DVBCSA_KEY_ECM
+static uint8_t (*dvbcsa_get_ecm_table_fn)(void) = NULL;
+#endif
 
 static uint8_t stream_server_mutex_init = 0;
 static pthread_mutex_t stream_server_mutex;
@@ -45,6 +48,9 @@ struct s_client *streamrelay_client[STREAM_SERVER_MAX_CONNECTIONS];
 static pthread_mutex_t fixed_key_srvid_mutex;
 static uint16_t stream_cur_srvid[STREAM_SERVER_MAX_CONNECTIONS];
 static stream_client_key_data key_data[STREAM_SERVER_MAX_CONNECTIONS];
+#if DVBCSA_KEY_ECM
+static uint16_t last_srvid[STREAM_SERVER_MAX_CONNECTIONS];
+#endif
 
 #ifdef MODULE_RADEGAST
 static int32_t gRadegastFd = 0;
@@ -158,7 +164,9 @@ void ParseEcmData(stream_client_data *cdata)
 static void write_cw(ECM_REQUEST *er, int32_t connid)
 {
 #if DVBCSA_KEY_ECM
-	const uint8_t ecm = (caid_is_videoguard(er->caid) && (er->ecm[4] != 0 && (er->ecm[2] - er->ecm[4]) == 4)) ? 4 : 0;
+	const uint8_t ecm = (cfg.stream_relay_ctab.ctnum == 0 && !select_csa_alt(er))
+		? 0
+		: get_ecm_mode(er);
 #endif
 	if (memcmp(er->cw, "\x00\x00\x00\x00\x00\x00\x00\x00", 8) != 0)
 	{
@@ -175,6 +183,17 @@ static void write_cw(ECM_REQUEST *er, int32_t connid)
 			dvbcsa_bs_key_set(er->cw + 8, key_data[connid].key[ODD]);
 		}
 	}
+#if DVBCSA_KEY_ECM
+	if (er->srvid != last_srvid[connid] && ecm != 0 && has_dvbcsa_ecm)
+	{
+		cs_log(dvbcsa_get_ecm_table_fn
+			? "Using ecm_mode=0x%02X, libdvbcsa table 0x%02X"
+			: "Using ecm_mode=0x%02X",
+			ecm,
+			dvbcsa_get_ecm_table_fn ? dvbcsa_get_ecm_table_fn() : 0);
+		last_srvid[connid] = er->srvid;
+	}
+#endif
 }
 
 static void update_client_info(ECM_REQUEST *er, int32_t connid)
@@ -502,7 +521,7 @@ static void stream_parse_pmt_ca_descriptor(const uint8_t *data, const int32_t da
 		if (descriptor_tag == 0x09 && descriptor_length >= 4)
 		{
 			caid = b2i(2, data + i + 2 + data_pos);
-			if (chk_ctab_ex(caid, &cfg.stream_relay_ctab))
+			if (cfg.stream_relay_ctab.ctnum == 0 || chk_ctab_ex(caid, &cfg.stream_relay_ctab))
 			{
 				if (cdata->caid == NO_CAID_VALUE)
 				{
@@ -516,6 +535,11 @@ static void stream_parse_pmt_ca_descriptor(const uint8_t *data, const int32_t da
 				cdata->ecm_pid = b2i(2, data + i + 4 + data_pos) & 0x1FFF;
 				cs_log_dbg(D_READER, "Stream client %i found ecm pid: 0x%04X (%i)",
 							cdata->connid, cdata->ecm_pid, cdata->ecm_pid);
+			}
+			else if (cdata->blocked_caid == NO_CAID_VALUE)
+			{
+				// Remember first blocked CAID for error message
+				cdata->blocked_caid = caid;
 			}
 		}
 	}
@@ -788,6 +812,9 @@ static void stream_client_disconnect(stream_client_conn_data *conndata)
 
 	SAFE_MUTEX_LOCK(&fixed_key_srvid_mutex);
 	stream_cur_srvid[conndata->connid] = NO_SRVID_VALUE;
+#if DVBCSA_KEY_ECM
+	last_srvid[conndata->connid] = NO_SRVID_VALUE;
+#endif
 	SAFE_MUTEX_UNLOCK(&fixed_key_srvid_mutex);
 
 	SAFE_MUTEX_LOCK(&stream_server_mutex);
@@ -1027,6 +1054,7 @@ static void *stream_client_handler(void *arg)
 
 	data->connid = conndata->connid;
 	data->caid = NO_CAID_VALUE;
+	data->blocked_caid = NO_CAID_VALUE;
 	data->have_pat_data = 0;
 	data->have_pmt_data = 0;
 	data->have_cat_data = 0;
@@ -1155,18 +1183,21 @@ static void *stream_client_handler(void *arg)
 					// We have both PAT and PMT data - We can start descrambling
 					if (data->have_pat_data == 1 && data->have_pmt_data == 1)
 					{
-						if (chk_ctab_ex(data->caid, &cfg.stream_relay_ctab) && (data->caid != 0xA101 || data->caid == NO_CAID_VALUE))
+						if (data->caid == NO_CAID_VALUE && cfg.stream_relay_ctab.ctnum > 0)
+						{
+							// No allowed CAID found but CAID filter is configured, disconnect client
+							cs_log("Stream client %i caid %04X not enabled in stream relay config",
+										conndata->connid, data->blocked_caid);
+							stream_client_disconnect(conndata);
+							return NULL;
+						}
+						if ((cfg.stream_relay_ctab.ctnum == 0 || chk_ctab_ex(data->caid, &cfg.stream_relay_ctab)) && data->caid != 0xA101 && data->caid != NO_CAID_VALUE)
 						{
 								DescrambleTsPackets(data, stream_buf + startOffset, packetCount * packetSize, packetSize, tsbbatch);
 								if (!descrambling && cfg.stream_relay_buffer_time) {
 									cs_sleepms(cfg.stream_relay_buffer_time);
 									descrambling = 1;
 								}
-						}
-						else
-						{
-							cs_log("Stream client %i caid %04X not enabled in stream relay config",
-										conndata->connid, data->caid);
 						}
 					}
 					else // Search PAT and PMT packets for service information
@@ -1237,6 +1268,9 @@ static void *stream_server(void)
 #if !STATIC_LIBDVBCSA
 	has_dvbcsa_ecm = (dlsym(RTLD_DEFAULT, "dvbcsa_bs_key_set_ecm"));
 	is_dvbcsa_static = 0;
+#if DVBCSA_KEY_ECM
+	dvbcsa_get_ecm_table_fn = dlsym(RTLD_DEFAULT, "dvbcsa_get_ecm_table");
+#endif
 #endif
 
 	cs_log("%s: (%s) %s dvbcsa parallel mode = %d (relay buffer time: %d ms)%s%s",

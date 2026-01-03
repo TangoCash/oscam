@@ -7398,15 +7398,6 @@ void delayer(ECM_REQUEST *er, uint32_t delay)
 	}
 }
 
-#ifdef WITH_EXTENDED_CW
-bool select_csa_alt(ECM_REQUEST *er)
-{
-	return ( caid_is_videoguard(er->caid)
-			&& er->ecm[4] != 0
-			&& (er->ecm[2] - er->ecm[4]) == 4 );
-}
-#endif
-
 void dvbapi_send_dcw(struct s_client *client, ECM_REQUEST *er)
 {
 	int32_t i, j, k, handled = 0;
@@ -7757,7 +7748,7 @@ void dvbapi_send_dcw(struct s_client *client, ECM_REQUEST *er)
 
 #ifdef MODULE_STREAMRELAY
 		bool set_dvbapi_cw = true;
-		if(chk_ctab_ex(er->caid, &cfg.stream_relay_ctab) && cfg.stream_relay_enabled)
+		if((cfg.stream_relay_ctab.ctnum == 0 || chk_ctab_ex(er->caid, &cfg.stream_relay_ctab)) && cfg.stream_relay_enabled)
 		{
 			// streamserver set cw
 			set_dvbapi_cw = !stream_write_cw(er);
@@ -7876,7 +7867,7 @@ void dvbapi_send_dcw(struct s_client *client, ECM_REQUEST *er)
 
 		if((cfg.dvbapi_listenport || cfg.dvbapi_boxtype == BOXTYPE_PC_NODMX) || ca_soft_csa[i])
 		{
-			dvbapi_net_send(DVBAPI_ECM_INFO, demux[i].socket_fd, 0, i, 0, NULL, client, er, demux[i].client_proto_version);
+			dvbapi_net_send(DVBAPI_ECM_INFO, demux[i].socket_fd, er->msgid, i, 0, NULL, client, er, demux[i].client_proto_version);
 		}
 
 		if(cfg.dvbapi_ecminfo_file != 0 && cfg.dvbapi_boxtype != BOXTYPE_SAMYGO)

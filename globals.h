@@ -372,7 +372,7 @@
 #define WIKI_URL				"https://git.streamboard.tv/common/oscam/-/wikis"
 #define BOARD_URL				"https://board.streamboard.tv"
 #ifndef CS_VERSION
-#define CS_VERSION				"2.25.12-11907"
+#define CS_VERSION				"2.26.01-11909"
 #endif
 #ifndef CS_GIT_COMMIT
 #define CS_GIT_COMMIT			"a2b4c6d8"
@@ -2664,6 +2664,16 @@ static inline bool caid_is_nagra(uint16_t caid) { return caid >> 8 == 0x18; }
 static inline bool caid_is_bulcrypt(uint16_t caid) { return caid == 0x5581 || caid == 0x4AEE; }
 static inline bool caid_is_dre(uint16_t caid) { return caid == 0x4AE0 || caid == 0x4AE1 || caid == 0x2710;}
 static inline bool caid_is_tongfang(uint16_t caid) { return caid == 0x4A02; }
+#if defined(WITH_EXTENDED_CW) || defined(MODULE_STREAMRELAY)
+static inline bool select_csa_alt(const ECM_REQUEST *er) {
+	return (caid_is_videoguard(er->caid) && er->ecm[4] != 0 && (er->ecm[2] - er->ecm[4]) == 4);
+}
+#endif
+#ifdef MODULE_STREAMRELAY
+static inline uint8_t get_ecm_mode(const ECM_REQUEST *er) {
+	return (caid_is_videoguard(er->caid) && er->ecmlen >= 4) ? (er->ecm[er->ecmlen - 1] & 0x0F) : 0;
+}
+#endif
 const char *get_cardsystem_desc_by_caid(uint16_t caid);
 
 #endif
