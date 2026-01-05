@@ -5594,7 +5594,6 @@ static char *send_oscam_logpoll(struct templatevars * vars, struct uriparams * p
 
 static char *send_oscam_status(struct templatevars * vars, struct uriparams * params, int32_t apicall)
 {
-	int32_t i;
 	const char *usr;
 	int32_t lsec, isec, chsec, con, cau = 0;
 	time_t now = time((time_t *)0);
@@ -5753,7 +5752,7 @@ static char *send_oscam_status(struct templatevars * vars, struct uriparams * pa
 
 	cs_readlock(__func__, &readerlist_lock);
 	cs_readlock(__func__, &clientlist_lock);
-	for(i = 0, cl = first_client; cl ; cl = cl->next, i++)
+	for(cl = first_client; cl ; cl = cl->next)
 	{
 #ifdef CS_CACHEEX_AIO
 #if defined(MODULE_CCCAM) && defined(CS_CACHEEX)
@@ -6737,7 +6736,7 @@ static char *send_oscam_status(struct templatevars * vars, struct uriparams * pa
 	if(cfg.http_status_log)
 	{
 		// Debuglevel Selector
-		int32_t lvl;
+		int32_t i, lvl;
 		for(i = 0; i < MAX_DEBUG_LEVELS; i++)
 		{
 			lvl = 1 << i;
@@ -8080,7 +8079,10 @@ static char *send_oscam_cacheex(struct templatevars * vars, struct uriparams * p
 	char *pushing = "<IMG SRC=\"image?i=ICARRR\" ALT=\"Pushing\">";
 	char *rowvariable = "";
 
-	int16_t i, written = 0;
+	int16_t written = 0;
+#ifdef CS_CACHEEX_AIO
+	int16_t i = 0;
+#endif
 	struct s_client *cl;
 	time_t now = time((time_t *)0);
 	int delimiter=0;
@@ -8098,9 +8100,10 @@ static char *send_oscam_cacheex(struct templatevars * vars, struct uriparams * p
 	const char *cacheex_name_link_tpl = NULL;
 	tpl_addVar(vars, TPLADD, "CLIENTDESCRIPTION", "");
 
-	for(i = 0, cl = first_client; cl ; cl = cl->next, i++)
+	for(cl = first_client; cl ; cl = cl->next)
 	{
 #ifdef CS_CACHEEX_AIO
+		i++;
 		char classname[9];
 		snprintf(classname, 8, "class%02d", i) < 0 ? abort() : (void)0;
 		classname[8] = '\0';
@@ -8463,13 +8466,12 @@ static char *send_oscam_api(struct templatevars * vars, FILE * f, struct uripara
 	}
 	else if(strcmp(getParam(params, "part"), "ecmhistory") == 0)
 	{
-		int32_t i;
 		int32_t isec;
 		int32_t shown;
 		time_t now = time((time_t *)0);
 		const char *usr;
 		struct s_client *cl;
-		for(i = 0, cl = first_client; cl ; cl = cl->next, i++)
+		for(cl = first_client; cl ; cl = cl->next)
 		{
 			if(cl->wihidden != 1)
 			{
