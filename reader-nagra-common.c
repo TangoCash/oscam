@@ -61,6 +61,7 @@ int32_t nagra_get_emm_type(EMM_PACKET *ep, struct s_reader *rdr)
 
 			case 0x90:
 				ep->type = UNIQUE;
+#ifdef READER_NAGRA_MERLIN
 				if(rdr->cwpkcaid_length && rdr->nuid_length)
 				{
 					memset(ep->hexserial, 0x00, 0x08);
@@ -70,6 +71,7 @@ int32_t nagra_get_emm_type(EMM_PACKET *ep, struct s_reader *rdr)
 					ep->hexserial[3] = ep->emm[6];
 					return (!memcmp(rdr->nuid, ep->hexserial, 4));
 				}
+#endif
 				return 0;
 
 			default:
@@ -143,6 +145,7 @@ int32_t nagra_get_emm_type(EMM_PACKET *ep, struct s_reader *rdr)
 
 			case 0x90:
 				ep->type = UNIQUE;
+#ifdef READER_NAGRA_MERLIN
 				if(rdr->cwpkcaid_length && rdr->nuid_length)
 				{
 					memset(ep->hexserial, 0x00, 0x08);
@@ -152,6 +155,7 @@ int32_t nagra_get_emm_type(EMM_PACKET *ep, struct s_reader *rdr)
 					ep->hexserial[3] = ep->emm[6];
 					return (!memcmp(rdr->nuid, ep->hexserial, 4));
 				}
+#endif
 				return 0;
 
 			default:
@@ -309,6 +313,7 @@ int32_t nagra_get_emm_filter(struct s_reader *rdr, struct s_csystem_emm_filter *
 				idx++;
 			}
 
+#ifdef READER_NAGRA_MERLIN
 			if(rdr->cwpkcaid_length && rdr->nuid_length)
 			{
 				filters[idx].type = EMM_UNIQUE;
@@ -321,6 +326,7 @@ int32_t nagra_get_emm_filter(struct s_reader *rdr, struct s_csystem_emm_filter *
 				memset(&filters[idx].mask[0], 0xFF, 5);
 				idx++;
 			}
+#endif
 
 			*filter_count = idx;
 		}
@@ -388,6 +394,7 @@ int32_t nagra_get_emm_filter(struct s_reader *rdr, struct s_csystem_emm_filter *
 				idx++;
 			}
 
+#ifdef READER_NAGRA_MERLIN
 			if(rdr->cwpkcaid_length && rdr->nuid_length)
 			{
 				filters[idx].type = EMM_UNIQUE;
@@ -400,6 +407,7 @@ int32_t nagra_get_emm_filter(struct s_reader *rdr, struct s_csystem_emm_filter *
 				memset(&filters[idx].mask[0], 0xFF, 5);
 				idx++;
 			}
+#endif
 
 			*filter_count = idx;
 		}
