@@ -664,14 +664,20 @@ static void cs_dumpstack(int32_t sig)
 
 	fprintf(stderr, "crashed with signal %d on %swriting oscam.crash\n", sig, buf);
 
-	fprintf(fp, "%sOSCam cardserver v%s@%s (%s)\n", buf, CS_VERSION, CS_GIT_COMMIT, CS_TARGET);
-	fprintf(fp, "FATAL: Signal %d: %s Fault. Logged StackTrace:\n\n", sig, (sig == SIGSEGV) ? "Segmentation" : ((sig == SIGBUS) ? "Bus" : "Unknown"));
-	fclose(fp);
+	if (fp)
+	{
+		fprintf(fp, "%sOSCam cardserver v%s@%s (%s)\n", buf, CS_VERSION, CS_GIT_COMMIT, CS_TARGET);
+		fprintf(fp, "FATAL: Signal %d: %s Fault. Logged StackTrace:\n\n", sig, (sig == SIGSEGV) ? "Segmentation" : ((sig == SIGBUS) ? "Bus" : "Unknown"));
+		fclose(fp);
+	}
 
 	FILE *cmd = fopen("/tmp/gdbcmd", "w");
-	fputs("bt\n", cmd);
-	fputs("thread apply all bt\n", cmd);
-	fclose(cmd);
+	if (cmd)
+	{
+		fputs("bt\n", cmd);
+		fputs("thread apply all bt\n", cmd);
+		fclose(cmd);
+	}
 
 	snprintf(buf, sizeof(buf) - 1, "gdb %s %d -batch -x /tmp/gdbcmd >> oscam.crash", prog_name, getpid());
 	if(system(buf) == -1)
@@ -1564,8 +1570,8 @@ static void detect_valgrind(void)
 				break;
 			}
 		}
+		fclose(f);
 	}
-	fclose(f);
 #endif
 }
 
