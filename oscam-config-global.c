@@ -18,6 +18,7 @@
 #define DEFAULT_HTTP_PORT 8888
 #define DEFAULT_HTTP_ALLOW "127.0.0.1,192.168.0.0-192.168.255.255,10.0.0.0-10.255.255.255,172.16.0.0-172.31.255.255,::1"
 #define DEFAULT_HTTP_MAX_REQUEST_SIZE 102400
+#define MIN_HTTP_MAX_REQUEST_SIZE 1024
 
 static void disablelog_fn(const char *token, char *value, void *UNUSED(setting), FILE *f)
 {
@@ -46,6 +47,31 @@ static void loghistorylines_fn(const char *token, char *value, void *UNUSED(sett
 	}
 	if(cfg.loghistorylines != 256 || cfg.http_full_cfg)
 		{ fprintf_conf(f, token, "%u\n", cfg.loghistorylines); }
+}
+#endif
+
+#ifdef WEBIF
+static void httpmaxrequestsize_fn(const char *token, char *value, void *setting, FILE *f)
+{
+	int32_t *max_request_size = setting;
+	if(value)
+	{
+		int32_t newsize = strToIntVal(value, DEFAULT_HTTP_MAX_REQUEST_SIZE);
+		if(newsize <= 0)
+		{
+			fprintf(stderr, "WARNING: httpmaxrequestsize is invalid, adjusted to %d\n", DEFAULT_HTTP_MAX_REQUEST_SIZE);
+			newsize = DEFAULT_HTTP_MAX_REQUEST_SIZE;
+		}
+		else if(newsize < MIN_HTTP_MAX_REQUEST_SIZE)
+		{
+			fprintf(stderr, "WARNING: httpmaxrequestsize is too small, adjusted to %d\n", MIN_HTTP_MAX_REQUEST_SIZE);
+			newsize = MIN_HTTP_MAX_REQUEST_SIZE;
+		}
+		*max_request_size = newsize;
+		return;
+	}
+	if(*max_request_size != DEFAULT_HTTP_MAX_REQUEST_SIZE || cfg.http_full_cfg)
+		{ fprintf_conf(f, token, "%d\n", *max_request_size); }
 }
 #endif
 
@@ -564,7 +590,7 @@ static const struct config_list webif_opts[] =
 	DEF_OPT_STR("httplocale"                , OFS(http_locale)              , NULL),
 	DEF_OPT_INT8("http_prepend_embedded_css", OFS(http_prepend_embedded_css), 0),
 	DEF_OPT_INT32("httprefresh"             , OFS(http_refresh)             , 0),
-	DEF_OPT_INT32("httpmaxrequestsize"      , OFS(http_max_request_size)    , DEFAULT_HTTP_MAX_REQUEST_SIZE),
+	DEF_OPT_FUNC("httpmaxrequestsize"       , OFS(http_max_request_size)    , httpmaxrequestsize_fn),
 	DEF_OPT_INT32("httppollrefresh"         , OFS(poll_refresh)             , 60),
 	DEF_OPT_INT8("httphideidleclients"      , OFS(http_hide_idle_clients)   , 1),
 	DEF_OPT_STR("httphidetype"              , OFS(http_hide_type)           , NULL),
