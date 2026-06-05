@@ -68,6 +68,31 @@ static pthread_t httpthread;
 static int32_t sock;
 enum refreshtypes { REFR_ACCOUNTS, REFR_READERS, REFR_CLIENTS, REFR_SERVER, REFR_ANTICASC, REFR_SERVICES };
 
+static void setWebifTCPTimeouts(int32_t fd)
+{
+	struct timeval tv;
+	tv.tv_sec = 10;
+	tv.tv_usec = 0;
+
+	if(setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(struct timeval)) && errno != EBADF)
+	{
+		cs_log("WebIf: Setting SO_RCVTIMEO failed, errno=%d, %s", errno, strerror(errno));
+	}
+
+	if(setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(struct timeval)) && errno != EBADF)
+	{
+		cs_log("WebIf: Setting SO_SNDTIMEO failed, errno=%d, %s", errno, strerror(errno));
+	}
+
+#if defined(TCP_USER_TIMEOUT)
+	int32_t timeout = 10000; // RFC 5482 user timeout in milliseconds
+	if(setsockopt(fd, SOL_TCP, TCP_USER_TIMEOUT, (char *)&timeout, sizeof(timeout)) && errno != EBADF)
+	{
+		cs_log("WebIf: Setting TCP_USER_TIMEOUT failed, errno=%d, %s", errno, strerror(errno));
+	}
+#endif
+}
+
 //initialize structs for calculating cpu-usage depending on time between refresh of status_page
 static struct pstat p_stat_cur;
 static struct pstat p_stat_old;
@@ -10108,6 +10133,8 @@ static void *http_server(void *UNUSED(d))
 				continue;
 			}
 			setTCPTimeouts(s);
+			setWebifTCPTimeouts(s);
+
 			cur_client()->last = time((time_t *)0); //reset last busy time
 			conn->cl = cur_client();
 #ifdef IPV6SUPPORT
