@@ -394,7 +394,7 @@ DESCRIPTIONS
 	  status refresh in seconds, default:none
 
        httpmaxrequestsize = bytes
-	  maximum accepted HTTP request size for WebIF, default:102400
+	  maximum accepted HTTP request size for WebIF, minimum:1024, default:102400
 
        httphideidleclients = 0|1
 	  1 = enables hiding clients after idle time set in parameter hideclient_to, default:0
