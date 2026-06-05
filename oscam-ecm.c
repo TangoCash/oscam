@@ -2102,7 +2102,7 @@ void chk_dcw(struct s_ecm_answer *ea)
 				cs_hexdump(0, ert->cw, 16, cw2, sizeof(cw2));
 			}
 #endif
-			char ip1[20] = "", ip2[20] = "";
+			char ip1[INET6_ADDRSTRLEN] = "", ip2[INET6_ADDRSTRLEN] = "";
 			if(ea->reader && check_client(ea->reader->client)) { cs_strncpy(ip1, cs_inet_ntoa(ea->reader->client->ip), sizeof(ip1)); }
 			if(ert->cacheex_src) { cs_strncpy(ip2, cs_inet_ntoa(ert->cacheex_src->ip), sizeof(ip2)); }
 			else if(ert->selected_reader && check_client(ert->selected_reader->client)) { cs_strncpy(ip2, cs_inet_ntoa(ert->selected_reader->client->ip), sizeof(ip2)); }

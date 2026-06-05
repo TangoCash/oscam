@@ -25,6 +25,7 @@ extern void cs_getIPv6fromHost(const char *hostname, struct in6_addr *addr, stru
 #define SIN_GET_FAMILY(a) (a.sin_family)
 #endif
 
+void cs_inet_ntoa_init(void);
 char *cs_inet_ntoa(IN_ADDR_T addr);
 void cs_inet_addr(char *txt, IN_ADDR_T *out);
 void cs_resolve(const char *hostname, IN_ADDR_T *ip, struct SOCKADDR *sock, socklen_t *sa_len);
