@@ -450,7 +450,7 @@ static void cacheex_cache_add(ECM_REQUEST *er, ECMHASH *result, CW *cw, bool add
 			cs_hexdump(0, er->cw, 16, cw1, sizeof(cw1));
 			cs_hexdump(0, cw_first->cw, 16, cw2, sizeof(cw2));
 
-			char ip1[20]="", ip2[20]="";
+			char ip1[INET6_ADDRSTRLEN] = "", ip2[INET6_ADDRSTRLEN] = "";
 			if (check_client(er->cacheex_src))
 				cs_strncpy(ip1, cs_inet_ntoa(er->cacheex_src->ip), sizeof(ip1));
 			if (check_client(cw_first->cacheex_src))

@@ -33,24 +33,101 @@ static in_addr_t cs_inet_order(in_addr_t n)
 }
 #endif
 
+#define CS_INET_NTOA_SLOT_COUNT 8
+
+struct s_inet_ntoa_buffer
+{
+	uint8_t slot;
+	char text[CS_INET_NTOA_SLOT_COUNT][INET6_ADDRSTRLEN];
+};
+
+static pthread_key_t inet_ntoa_key;
+/* Initialized once during single-threaded startup before worker threads exist.
+ * This flag is only a misuse guard for cs_inet_ntoa() callers, not concurrency
+ * control for lazy initialization.
+ */
+static int8_t inet_ntoa_key_initialized = 0;
+
+static void cs_inet_ntoa_destroy_buffer(void *ptr)
+{
+	NULLFREE(ptr);
+}
+
+void cs_inet_ntoa_init(void)
+{
+	if(inet_ntoa_key_initialized)
+		{ return; }
+
+	int32_t pter = pthread_key_create(&inet_ntoa_key, cs_inet_ntoa_destroy_buffer);
+
+	if(pter)
+	{
+		fprintf_stderr("FATAL ERROR: pthread_key_create() failed in %s with error %d %s\n",
+				__func__, pter, strerror(pter));
+		exit(1);
+	}
+
+	inet_ntoa_key_initialized = 1;
+}
+
+static char *cs_inet_ntoa_get_buffer(void)
+{
+	struct s_inet_ntoa_buffer *buffer = NULL;
+	int32_t pter;
+
+	if(!inet_ntoa_key_initialized)
+	{
+		fprintf_stderr("FATAL ERROR: cs_inet_ntoa_init() was not called before %s\n", __func__);
+		exit(1);
+	}
+
+	buffer = pthread_getspecific(inet_ntoa_key);
+	if(!buffer)
+	{
+		if(!cs_malloc(&buffer, sizeof(*buffer)))
+		{
+			fprintf_stderr("FATAL ERROR: cs_malloc() failed in %s\n", __func__);
+			exit(1);
+		}
+
+		pter = pthread_setspecific(inet_ntoa_key, buffer);
+		if(pter)
+		{
+			fprintf_stderr("FATAL ERROR: pthread_setspecific() failed in %s with error %d %s\n",
+					__func__, pter, strerror(pter));
+			NULLFREE(buffer);
+			exit(1);
+		}
+	}
+
+	char *text = buffer->text[buffer->slot];
+	buffer->slot = (buffer->slot + 1) % CS_INET_NTOA_SLOT_COUNT;
+	return text;
+}
+
 char *cs_inet_ntoa(IN_ADDR_T addr)
 {
+	char *buff = cs_inet_ntoa_get_buffer();
+	buff[0] = '\0';
+
 #ifdef IPV6SUPPORT
-	static char buff[INET6_ADDRSTRLEN];
 	if(IN6_IS_ADDR_V4MAPPED(&addr) || IN6_IS_ADDR_V4COMPAT(&addr))
 	{
-		snprintf(buff, sizeof(buff), "%d.%d.%d.%d",
+		snprintf(buff, INET6_ADDRSTRLEN, "%d.%d.%d.%d",
 				 addr.s6_addr[12], addr.s6_addr[13], addr.s6_addr[14], addr.s6_addr[15]);
 	}
 	else
 	{
-		inet_ntop(AF_INET6, &(addr.s6_addr), buff, INET6_ADDRSTRLEN);
+		if(!inet_ntop(AF_INET6, &(addr.s6_addr), buff, INET6_ADDRSTRLEN))
+			{ return buff; }
 	}
 	return buff;
 #else
 	struct in_addr in;
 	in.s_addr = addr;
-	return (char *)inet_ntoa(in);
+	if(!inet_ntop(AF_INET, &in, buff, INET6_ADDRSTRLEN))
+		{ return buff; }
+	return buff;
 #endif
 }
 

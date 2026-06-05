@@ -144,7 +144,7 @@ static void cs_fake_client(struct s_client *client, char *usr, int32_t uniq, IN_
 		if(cl != client && cl->typ == 'c' && !cl->dup && account && streq(account->usr, usr)
 			&& uniq < 5 && ((uniq % 2) || !IP_EQUAL(cl->ip, ip)))
 		{
-			char buf[20];
+			char buf[INET6_ADDRSTRLEN];
 
 			con_count++;
 			if(con_count <= account->max_connections)
@@ -563,7 +563,7 @@ int32_t cs_auth_client(struct s_client *client, struct s_auth *account, const ch
 
 void cs_disconnect_client(struct s_client *client)
 {
-	char buf[32] = { 0 };
+	char buf[INET6_ADDRSTRLEN + 6] = { 0 };
 
 	if(IP_ISSET(client->ip))
 	{
