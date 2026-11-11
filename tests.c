@@ -259,8 +259,8 @@ static int run_md5_tests(void)
 	return failures;
 }
 
-/* SHA1: exercises both one-shot SHA1() and the Init/Update/Final
- *       variant, split on byte 1 to catch partial-update bugs.
+/* SHA1: exercises whole-input and streaming Init/Update/Final calls,
+ *       split on byte 1 to catch partial-update bugs.
  *       Vectors: FIPS 180-1. */
 static int run_sha1_tests(void)
 {
@@ -270,6 +270,7 @@ static int run_sha1_tests(void)
 		{ "448bit",  "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
 		                                                        0, "84983e441c3bd26ebaae4aa1f95129e5e54670f1" },
 		{ "fox",     "The quick brown fox jumps over the lazy dog", 0, "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12" },
+		{ "1M_a",    "a",                                   1000000, "34aa973cd4c4daa4f61eeb2bdbad27316534016f" },
 		{ NULL, NULL, 0, NULL }
 	};
 	int failures = 0;
@@ -308,6 +309,79 @@ static int run_sha1_tests(void)
 		else { report_mismatch("SHA1 streaming", v->name, md2, 20, v->expected); failures++; }
 		fflush(stdout);
 	}
+	return failures;
+}
+
+static int run_sha1_input_tests(void)
+{
+	static const size_t sizes[] = { 0, 1, 55, 56, 57, 63, 64, 65, 127, 128, 129, 255 };
+	static const size_t chunks[] = { 1, 7, 63, 64, 65, 255 };
+	union { uint32_t align; uint8_t bytes[259]; } input;
+	uint8_t saved[sizeof(input.bytes)], expected[20], got[20];
+	int failures = 0;
+	for (size_t i = 0; i < sizeof(saved); i++) saved[i] = (uint8_t)(i * 37 + 11);
+	printf("SHA1 input preservation and update boundaries");
+	for (size_t offset = 1; offset <= 3; offset++)
+	{
+		for (size_t n = 0; n < sizeof(sizes) / sizeof(sizes[0]); n++)
+		{
+			SHA_CTX reference;
+			SHA1_Init(&reference);
+			for (size_t i = 0; i < sizes[n]; i++) SHA1_Update(&reference, saved + offset + i, 1);
+			SHA1_Final(expected, &reference);
+			for (size_t c = 0; c < sizeof(chunks) / sizeof(chunks[0]); c++)
+			{
+				for (size_t prefix = 0; prefix <= 1 && prefix <= sizes[n]; prefix++)
+				{
+					SHA_CTX context;
+					memcpy(input.bytes, saved, sizeof(saved));
+					SHA1_Init(&context);
+					if (prefix) SHA1_Update(&context, input.bytes + offset, prefix);
+					for (size_t pos = prefix; pos < sizes[n]; )
+					{
+						size_t count = sizes[n] - pos;
+						if (count > chunks[c]) count = chunks[c];
+						SHA1_Update(&context, input.bytes + offset + pos, count);
+						pos += count;
+					}
+					SHA1_Final(got, &context);
+					if (memcmp(expected, got, sizeof(got)) || memcmp(input.bytes, saved, sizeof(saved)))
+					{
+						printf("\n === ERROR === offset=%zu size=%zu chunk=%zu prefix=%zu\n", offset, sizes[n], chunks[c], prefix);
+						failures++;
+					}
+				}
+			}
+		}
+	}
+	if (!failures) printf(" [OK]\n");
+
+	/* Const storage also catches writes on hosts that map it read-only. */
+	static const uint8_t readonly[] =
+		"0123456789abcdef0123456789abcdef0123456789abcdef"
+		"0123456789abcdef0123456789abcdef0123456789abcdef"
+		"0123456789abcdef0123456789abcdef0123456789abcdef";
+	SHA_CTX context, reference;
+	SHA1_Init(&reference);
+	for (size_t i = 0; i < 128; i++) SHA1_Update(&reference, readonly + 1 + i, 1);
+	SHA1_Final(expected, &reference);
+	SHA1_Init(&context);
+	SHA1_Update(&context, readonly + 1, 128);
+	SHA1_Final(got, &context);
+	printf("SHA1 const input");
+	if (!memcmp(expected, got, sizeof(got))) printf(" [OK]\n");
+	else { printf(" [FAIL]\n"); failures++; }
+#if !defined(WITH_SSL) && !defined(WITH_LIBCRYPTO)
+	/* The bundled transform takes state words; OpenSSL takes a context. */
+	SHA1_Init(&reference);
+	SHA1_Update(&reference, readonly + 1, 64);
+	SHA1_Init(&context);
+	SHA1_Transform(context.state, readonly + 1);
+	printf("SHA1 direct transform of const unaligned input");
+	if (!memcmp(reference.state, context.state, sizeof(context.state))) printf(" [OK]\n");
+	else { printf(" [FAIL]\n"); failures++; }
+#endif
+	fflush(stdout);
 	return failures;
 }
 
@@ -1242,6 +1316,7 @@ static int run_crypto_tests(void)
 	failures += run_md5_crypt_tests();
 #endif
 	failures += run_sha1_tests();
+	failures += run_sha1_input_tests();
 	failures += run_sha256_tests();
 #ifdef WITH_LIB_MDC2
 	failures += run_mdc2_tests();
