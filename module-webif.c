@@ -54,9 +54,11 @@ int32_t ssl_active = 0;
 char noncekey[33];
 pthread_key_t getkeepalive;
 static pthread_key_t getip;
-pthread_key_t getssl;
 static CS_MUTEX_LOCK http_lock;
+#ifdef WITH_SSL
+pthread_key_t getssl;
 CS_MUTEX_LOCK *lock_cs;
+#endif
 
 static uint8_t useLocal = 1;
 #define PRINTF_LOCAL_D useLocal ? "%'d" : "%d"
