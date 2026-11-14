@@ -31,8 +31,8 @@ function initDoc() {
 /* Function for add new reader/user in readers.html/userconfig.html */
 function addinsert() {
 	cdpause();
-	$("#searchTable").fadeOut('slow', function() {
-		$("#newinsert").fadeIn('slow');
+	$("#searchTable").fadeOut('fast', function() {
+		$("#newinsert").fadeIn('fast');
 	});
 }
 
@@ -298,10 +298,10 @@ $(function () {
 	$("#showhidesettings").click(function () {
 		if ($("#showhidesettings").val() == 'Show Settings') {
 			$("#showhidesettings").val('Hide Settings');
-			$("#regexdata").fadeIn('slow');
+			$("#regexdata").fadeIn('fast');
 		} else {
 			$("#showhidesettings").val('Show Settings');
-			$("#regexdata").fadeOut('slow');
+			$("#regexdata").fadeOut('fast');
 		}
 	});
 
