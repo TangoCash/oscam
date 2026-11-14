@@ -65,10 +65,8 @@ var beep = (function () {
 						window.msAudioContext);
 	if (contextClass) {
 		var ctx = new contextClass();
-		return function (duration, type, freq, vol, finishedCallback) {
+		return function (duration, freq, vol, finishedCallback) {
 			duration = +duration;
-			// Only 0-4 are valid types.
-			type = (type % 5) || 0;
 
 			if (typeof finishedCallback != "function") {
 				finishedCallback = function () {};
@@ -76,11 +74,9 @@ var beep = (function () {
 
 			var osc = ctx.createOscillator();
 			var gainNode = ctx.createGain();
-			osc.type = type;
 			osc.connect(gainNode);
 			gainNode.connect(ctx.destination);
 			gainNode.gain.value = vol;
-			osc.type = type;
 			osc.frequency.value = freq; // value in hertz
 			osc.detune.value = 100; // value in cents
 			osc.start(0);
@@ -91,7 +87,7 @@ var beep = (function () {
 			}, duration);
 		};
 	} else {
-		return function (duration, type, freq, vol, finishedCallback) {return;};
+		return function (duration, freq, vol, finishedCallback) {return;};
 	}
 })();
 
@@ -969,7 +965,7 @@ function updateLogpage(data) {
 					}
 					$("#livelogdata").append(newline);
 					if (newcolor.beep == 1) {
-						beep(50, 4, 1000, 0.2);
+						beep(50, 1000, 0.2);
 					}
 				} else {
 					hiddenline = 1;
