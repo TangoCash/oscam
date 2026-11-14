@@ -69,11 +69,11 @@ Contributions are welcome. If you want to help improve OSCam:
 
 ## Help and Support
 
-- Man pages and configuration examples are available in the
+- Man pages and text documentation are available in the
   `Distribution/doc` directory of the source tree.
 - For bug reports and feature requests, please use the
   [GitLab issue tracker](https://git.streamboard.tv/common/oscam/-/issues).
 - For community help and general discussion (mainly German and English),
   visit the [support forum](https://board.streamboard.tv/forum/).
-- For configuration guides, FAQs, and detailed documentation, see the
+- For configuration guides and examples, FAQs, and detailed documentation, see the
   [OSCam wiki](https://git.streamboard.tv/common/oscam/-/wikis/home).
