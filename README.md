@@ -1,25 +1,25 @@
 # OSCam: Open Source Conditional Access Module
 
-[![GitLab Last Commit](https://img.shields.io/gitlab/last-commit/11?gitlab_url=https%3A%2F%2Fgit.streamboard.tv&style=for-the-badge)](https://git.streamboard.tv/common/oscam/-/commits/master)
-[![GitLab Tag](https://img.shields.io/gitlab/v/tag/11?gitlab_url=https%3A%2F%2Fgit.streamboard.tv&style=for-the-badge)](https://git.streamboard.tv/common/oscam/-/tags)
-[![GitLab License](https://img.shields.io/gitlab/license/11?gitlab_url=https%3A%2F%2Fgit.streamboard.tv&style=for-the-badge)](https://git.streamboard.tv/common/oscam/-/blob/master/COPYING)
+[![GitLab Last Commit](https://img.shields.io/gitlab/last-commit/11?gitlab_url=https%3A%2F%2Fgit.streamboard.info&style=for-the-badge)](https://git.streamboard.info/common/oscam/-/commits/master)
+[![GitLab Tag](https://img.shields.io/gitlab/v/tag/11?gitlab_url=https%3A%2F%2Fgit.streamboard.info&style=for-the-badge)](https://git.streamboard.info/common/oscam/-/tags)
+[![GitLab License](https://img.shields.io/gitlab/license/11?gitlab_url=https%3A%2F%2Fgit.streamboard.info&style=for-the-badge)](https://git.streamboard.info/common/oscam/-/blob/master/COPYING)
 
 ## Quick links
 
-- [Releases](https://git.streamboard.tv/common/oscam/-/commits/master)
-- [GitLab repository](https://git.streamboard.tv/common/oscam)
-- [Wiki](https://git.streamboard.tv/common/oscam/-/wikis/home)
-- [Issue tracker](https://git.streamboard.tv/common/oscam/-/issues)
+- [Releases](https://git.streamboard.info/common/oscam/-/commits/master)
+- [GitLab repository](https://git.streamboard.info/common/oscam)
+- [Wiki](https://git.streamboard.info/common/oscam/-/wikis/home)
+- [Issue tracker](https://git.streamboard.info/common/oscam/-/issues)
 - [Support forum](https://board.streamboard.tv/forum/)
 
 ## Releases
 
 For the latest changes and release history, see the
-[OSCam commits](https://git.streamboard.tv/common/oscam/-/commits/master) page.
+[OSCam commits](https://git.streamboard.info/common/oscam/-/commits/master) page.
 
 ## GitLab repository
 
-Project page: [git.streamboard.tv/common/oscam](https://git.streamboard.tv/common/oscam)
+Project page: [git.streamboard.info/common/oscam](https://git.streamboard.info/common/oscam)
 
 ## Building & Dependencies
 
@@ -28,7 +28,7 @@ different CPUs, required and optional dependencies, SSL support, hardware
 modules, and platform-specific or distribution-specific notes, please
 refer to the OSCam wiki:
 
-- [Wiki Home](https://git.streamboard.tv/common/oscam/-/wikis/home)
+- [Wiki Home](https://git.streamboard.info/common/oscam/-/wikis/home)
 
 ## License
 
@@ -53,18 +53,18 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 
 For the full text of the license, please see the
-[COPYING](https://git.streamboard.tv/common/oscam/-/blob/master/COPYING)
+[COPYING](https://git.streamboard.info/common/oscam/-/blob/master/COPYING)
 file in the OSCam repository.
 
 ## Contributing
 
 Contributions are welcome. If you want to help improve OSCam:
 
-- Browse the existing [issues](https://git.streamboard.tv/common/oscam/-/issues)
+- Browse the existing [issues](https://git.streamboard.info/common/oscam/-/issues)
   and open a new issue if you find a bug or have a feature request.
-- Fork the [GitLab repository](https://git.streamboard.tv/common/oscam),
+- Fork the [GitLab repository](https://git.streamboard.info/common/oscam),
   create a topic branch, and submit a merge request.
-- Check the [OSCam wiki](https://git.streamboard.tv/common/oscam/-/wikis/home)
+- Check the [OSCam wiki](https://git.streamboard.info/common/oscam/-/wikis/home)
   for additional project information and guidelines.
 
 ## Help and Support
@@ -72,8 +72,8 @@ Contributions are welcome. If you want to help improve OSCam:
 - Man pages and text documentation are available in the
   `Distribution/doc` directory of the source tree.
 - For bug reports and feature requests, please use the
-  [GitLab issue tracker](https://git.streamboard.tv/common/oscam/-/issues).
+  [GitLab issue tracker](https://git.streamboard.info/common/oscam/-/issues).
 - For community help and general discussion (mainly German and English),
   visit the [support forum](https://board.streamboard.tv/forum/).
 - For configuration guides and examples, FAQs, and detailed documentation, see the
-  [OSCam wiki](https://git.streamboard.tv/common/oscam/-/wikis/home).
+  [OSCam wiki](https://git.streamboard.info/common/oscam/-/wikis/home).

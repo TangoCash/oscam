@@ -1617,7 +1617,7 @@ $(document).ready(function () {
 
 	// help wiki links
 	if (typeof oscamconf != "undefined") {
-		var wikihref = "https://git.streamboard.tv/common/oscam/-/wikis/pages/configuration/oscam." + oscamconf + "#";
+		var wikihref = "https://git.streamboard.info/common/oscam/-/wikis/pages/configuration/oscam." + oscamconf + "#";
 		$("form table a").click(function () {
 			if (!$(this).attr("href") && !$(this).attr("name")) {
 				if ($(this).data('p')) {
@@ -2831,7 +2831,7 @@ $(function() {
 		var $popup = $('#wikiPopup');
 
 		$('.wiki-popup-title').text(inputName).attr('href',
-			'https://git.streamboard.tv/common/oscam/-/wikis/pages/configuration/oscam.' + oscamconf + '#' + externalParam);
+			'https://git.streamboard.info/common/oscam/-/wikis/pages/configuration/oscam.' + oscamconf + '#' + externalParam);
 		$('.wiki-popup-content').html('<div class="wiki-loading">Loading...</div>');
 
 		var offset = $link.offset();
@@ -2875,7 +2875,7 @@ $(function() {
 				} else {
 					$('.wiki-popup-content').html(
 						'<div class="wiki-nohelp">No help available for this parameter.<br><br>' +
-						'<a href="https://git.streamboard.tv/common/oscam/-/wikis/pages/configuration/oscam.' +
+						'<a href="https://git.streamboard.info/common/oscam/-/wikis/pages/configuration/oscam.' +
 						oscamconf + '#' + externalParam + '" target="_blank">View Wiki &rarr;</a></div>'
 					);
 				}
@@ -2883,7 +2883,7 @@ $(function() {
 			error: function() {
 				$('.wiki-popup-content').html(
 					'<div class="wiki-error">Failed to load help.<br><br>' +
-					'<a href="https://git.streamboard.tv/common/oscam/-/wikis/pages/configuration/oscam.' +
+					'<a href="https://git.streamboard.info/common/oscam/-/wikis/pages/configuration/oscam.' +
 					oscamconf + '#' + externalParam + '" target="_blank">View Wiki &rarr;</a></div>'
 				);
 			}

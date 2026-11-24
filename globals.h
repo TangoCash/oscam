@@ -368,8 +368,8 @@
 /* ===========================
  *			constants
  * =========================== */
-#define SCM_URL					"https://git.streamboard.tv/common/oscam"
-#define WIKI_URL				"https://git.streamboard.tv/common/oscam/-/wikis"
+#define SCM_URL					"https://git.streamboard.info/common/oscam"
+#define WIKI_URL				"https://git.streamboard.info/common/oscam/-/wikis"
 #define BOARD_URL				"https://board.streamboard.tv"
 #ifndef CS_VERSION
 #define CS_VERSION				"2.26.11-11991"
