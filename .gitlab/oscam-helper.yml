@@ -150,7 +150,7 @@
     - |
       echo "Setting up git properties..."
       git config user.name "pipeline-user"
-      git config user.email "pipeline-user@users.noreply.git.streamboard.tv"
+      git config user.email "pipeline-user@users.noreply.git.streamboard.info"
 
   #runs oscam make/cmake test builds (needs variable ARCH: native|aarch64|armv7|mips32el|powerpc|sh4|android12 to be set in the calling job)
   oscam-build:
